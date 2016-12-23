@@ -1,0 +1,57 @@
+<div class="login-box">
+  <div class="login-logo">
+    Web Accessibility <b>Transcoder</b>
+  </div>
+  <!-- /.login-logo -->
+  <div class="login-box-body">
+    <p class="login-box-msg">{{lang.getString('register_msg')}}</p>
+    <div>
+      <div class="form-group has-feedback">
+        <input type="text" ng-model="user.name" class="form-control" placeholder="{{lang.getString('name')}}">
+        <span class="glyphicon glyphicon-user form-control-feedback"></span>
+      </div>
+      <div class="form-group has-feedback">
+        <input type="email" ng-model="user.email" class="form-control" placeholder="{{lang.getString('email')}}">
+        <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+      </div>
+      <div class="form-group has-feedback">
+        <input type="password" ng-model="user.password" class="form-control" placeholder="{{lang.getString('password')}}">
+        <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+      </div>
+      <div class="form-group has-feedback">
+        <input type="password" ng-model="user.confirmPassword" class="form-control" placeholder="{{lang.getString('confirm_password')}}">
+        <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+      </div>
+      <div class="form-group has-feedback">
+        <label>{{lang.getString('select_user_lang')}}</label>
+        <select ng-model="user.lang" class="form-control">
+          <option ng-repeat="lan in languages" value="{{lan}}">{{lang.getString(lan)}}</option>
+        </select>
+        <span class="glyphicon form-control-feedback"></span>
+      </div>
+      <div class="form-group has-feedback">
+        <label>{{lang.getString('select_user_type')}}</label>
+        <select ng-model="selectedUserType" class="form-control"
+          ng-options="item as item.label for item in typeUserOptions"
+          ></select>
+        <span class="glyphicon form-control-feedback"></span>
+      </div>
+
+
+      <p ng-if="registerMsg" style="color:darkred;">{{registerMsg}}</p>
+      <div class="row">
+        <div class="col-xs-8">
+          <div class="checkbox icheck">
+
+          </div>
+        </div>
+        <!-- /.col -->
+        <div class="col-xs-4">
+          <button type="submit" ng-click="register()" class="btn btn-primary btn-block btn-flat">{{lang.getString('register')}}</button>
+        </div>
+        <!-- /.col -->
+      </div>
+    </div>
+
+  </div>
+</div>

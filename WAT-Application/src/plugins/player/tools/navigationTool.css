@@ -1,0 +1,13 @@
+/** START -- CSS code associated to the NavigationTool **/
+.wat-navigation-hidden-text{
+    display: block;
+}
+.wat-navigation-hidden-text span,.wat-navigation-dummy{
+    position:absolute;
+    left:-10000px;
+    width: 1000px;
+    top:auto;
+    overflow:hidden;
+}
+
+/** END   -- CSS code associated to the NavigationTool **/

@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>QUnit Example</title>
+    <link rel="stylesheet" href="https://code.jquery.com/qunit/qunit-1.23.1.css">
+</head>
+<body>
+<div id="qunit"></div>
+<div id="qunit-fixture"></div>
+<script src="../lib/qunit-1.23.1.js"></script>
+<script src="../../vendors/jquery-1.11.2.min.js"></script>
+<script src="../../src/wat.js"></script>
+
+<!-- Mocks -->
+<script src="./mocks/config.mock.js"></script>
+
+<!-- Real modules -->
+<script src="../../src/modules/Logger.js"></script>
+<script src="../../src/modules/lang.js"></script>
+<script src="../../src/modules/utils.js"></script>
+
+
+<test>
+    <div id="root" deep="0" height="5" name="A">
+        <div deep="1" height="2" name="B">
+
+            <div deep="2" height="0" name="E"></div>
+
+            <div deep="2" height="1" name="F">
+                <div deep="3" height="0" name="H"></div>
+            </div>
+
+        </div>
+        <div deep="1" height="4" name="C">
+            <div deep="2" height="3" name="G">
+                <div deep="3" height="2" name="I">
+                    <div deep="4" height="1" name="J">
+                        <div deep="5" height="0" name="K"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div deep="1" height="0" name="D">
+        </div>
+    </div>
+</test>
+
+<script>
+
+    QUnit.config.reorder = false;
+    QUnit.module("Test Utils module");
+    var moduleName = "$utils";
+
+    var ItemWithId = function (id,value){
+        this.id = id;
+        this.value = value;
+    };
+    ItemWithId.prototype.getId = function(){
+        return this.id;
+    };
+    ItemWithId.prototype.getValue = function(){
+        return this.value;
+    };
+
+    var Item = function (value){
+        this.value = value;
+    };
+    Item.prototype.getValue = function(){
+        return this.value;
+    };
+
+
+    function compareArrayAndObject(arr,obj){
+        for(var i in arr){
+            var item = arr[i];
+            var item2;
+            if(item.getId){
+                if(!obj[item.getId()]) return false;
+                item2 = obj[item.getId()];
+            }else{
+                if(!obj[i]) return false;
+                item2 = obj[i];
+            }
+            if(item.getValue() != item2.getValue()) return false;
+        }
+        return true;
+    }
+
+
+    QUnit.test( "Check utils module is loaded", function( assert ) {
+        var unloaded = Object.keys(WAT.unloadedModules);
+        if(unloaded.length>0){
+            for(var k in unloaded) console.log('Unloaded moduled called',unloaded[k]);
+        }
+        assert.equal(Object.keys(WAT.unloadedModules).length,0,"shouldn't exist unloaded modules");
+        assert.notEqual(WAT.modules[moduleName],null,"should exist a module called "+moduleName+" loaded");
+    });
+
+    QUnit.test( "Check arrayToObject and objectToArray operations, when items have getId function", function( assert ) {
+        var $utils = WAT.getModule(moduleName);
+        var it1 = new ItemWithId('i1',1);
+        var it2 = new ItemWithId('i2',2);
+        var it3 = new ItemWithId('i3',3);
+        var arr = [it1,it2,it3];
+
+        var obj = $utils.arrayToObject(arr);
+        var backToArray = $utils.objectToArray(obj);
+
+        QUnit.ok(compareArrayAndObject(arr,obj)," new object should be equal to array");
+        QUnit.ok(compareArrayAndObject(backToArray,obj)," new array should be equal to object");
+
+        var eq = true;
+        for(var i in arr){
+            eq &= arr[i].getValue() == backToArray[i].getValue();
+        }
+        QUnit.ok(eq," final array should be equal to init array");
+    });
+
+ QUnit.test( "Check arrayToObject and objectToArray operations, when items don't have getId function", function( assert ) {
+        var $utils = WAT.getModule(moduleName);
+        var it1 = new Item(1);
+        var it2 = new Item('i2',2);
+        var it3 = new Item('i3',3);
+        var arr = [it1,it2,it3];
+
+        var obj = $utils.arrayToObject(arr);
+        var backToArray = $utils.objectToArray(obj);
+
+        QUnit.ok(compareArrayAndObject(arr,obj)," new object should be equal to array");
+        QUnit.ok(compareArrayAndObject(backToArray,obj)," new array should be equal to object");
+
+        var eq = true;
+        for(var i in arr){
+            eq &= arr[i].getValue() == backToArray[i].getValue();
+        }
+        QUnit.ok(eq," final array should be equal to init array");
+    });
+
+
+    QUnit.test( "Test Queue", function( assert ) {
+        var $utils = WAT.getModule(moduleName);
+        var q = new $utils.Queue();
+        for(var i = 0; i<50; i++) q.add(i);
+
+        var notEmpty = true;
+        var peek = true;
+        var poll = true;
+        for(var i = 0; i<50; i++) {
+            notEmpty = notEmpty && !q.isEmpty();
+            peek = peek && (q.peek() == i);
+            poll = poll && (q.poll() == i);
+        }
+        QUnit.ok(notEmpty," Should not have been empty");
+        QUnit.ok(peek," Should have matched all the peeks");
+        QUnit.ok(poll," Should have matched all the polls");
+        QUnit.ok(q.isEmpty()," Should now be empty");
+    });
+
+    QUnit.test( "Test Stack", function( assert ) {
+        var $utils = WAT.getModule(moduleName);
+        var st = new $utils.Stack();
+        for(var i = 0; i<50; i++) st.push(i);
+
+        var notEmpty = true;
+        var peek = true;
+        var pop = true;
+        for(var i = 49; i>=0; i--) {
+            notEmpty = notEmpty && !st.isEmpty();
+            peek = peek && (st.peek() == i);
+            pop = pop && (st.pop() == i);
+        }
+        QUnit.ok(notEmpty," Should not have been empty");
+        QUnit.ok(peek," Should have matched all the peeks");
+        QUnit.ok(pop," Should have matched all the pops");
+        QUnit.ok(st.isEmpty()," Should now be empty");
+    });
+
+
+    QUnit.test( "Test Heap", function( assert ) {
+        var $utils = WAT.getModule(moduleName);
+        var arr = [9,8,7,6,5,4,3,2,12,5,4,53,765,3,24,27,755,6456,35642,34,8,2,3,4,5,6,7,8,342,123,12,32,54,76,36,78,4,26,5,357,8,9,7,56,778,789,6,97];
+        var sorted = arr.slice();
+            sorted = sorted.sort(function(a,b){return a-b});
+
+
+        /// Test with the default sort function:
+
+        var hp1 = new $utils.Heap();
+        for(var i = 0; i<arr.length; i++) hp1.add(arr[i]);
+        var hp2 = new $utils.Heap(arr);
+
+        var equals = true; i = 0;
+        while(!hp1.isEmpty() && !hp2.isEmpty() && i<sorted.length){
+            equals = equals && (hp1.peek() === sorted[i]);
+            equals = equals && (hp2.peek() === sorted[i]);
+            hp1.pop(); hp2.pop(); i++;
+        }
+        QUnit.ok(equals," All values should be equals");
+        QUnit.ok(hp1.isEmpty()," Heap 1 should be empty");
+        QUnit.ok(hp2.isEmpty()," Heap 2 should be empty");
+        assert.equal(i,sorted.length," All the sorted array should have been traversed");
+
+
+        /// Test with a custom sort function:
+        var desc = sorted.slice();
+            desc.reverse();
+        var descFn = function(a,b){return a > b};
+        var hp3 = new $utils.Heap([],descFn);
+        for(var i = 0; i<arr.length; i++) hp3.add(arr[i]);
+        var hp4 = new $utils.Heap(arr,descFn);
+
+
+        var equals = true; i = 0;
+        while(!hp3.isEmpty() && !hp4.isEmpty() && i<desc.length){
+            equals = equals && (hp3.peek() === desc[i]);
+            equals = equals && (hp4.peek() === desc[i]);
+            hp3.pop(); hp4.pop(); i++;
+        }
+        QUnit.ok(equals," All values should be equals");
+        QUnit.ok(hp1.isEmpty()," Heap 1 should be empty");
+        QUnit.ok(hp2.isEmpty()," Heap 2 should be empty");
+        assert.equal(i,desc.length," All the sorted array should have been traversed");
+
+    });
+
+    QUnit.test( "Test ElementHeight", function( assert ) {
+        var $utils = WAT.getModule(moduleName);
+        var root = $('#root');
+        assert.equal($utils.getElementHeight(root),$(root).attr('height')," Should match the height of the element");
+        $(root).find('*').each(function(){
+            assert.equal($utils.getElementHeight(this),$(this).attr('height')," Should match the height of the element");
+        });
+    });
+
+
+
+    QUnit.test( "Test BFS traversal without maxDeep", function( assert ) {
+        var $utils = WAT.getModule(moduleName);
+        var root = $('#root')[0];
+        $utils.doBFS(root,{},function(element,deepness,data){
+
+            assert.equal(deepness,$(element).attr('deep')," Should match the deep of the element");
+
+            if(element != root[0]){
+                assert.equal(data.parentName,$(element).parent().attr('name')," Should receive data from the parent");
+            }else{
+                assert.equal(Object.keys(data).length,0," Should not receive any data");
+            }
+            return {parentName: $(element).attr('name')}
+        });
+    });
+
+    QUnit.test( "Test BFS traversal with maxDeep", function( assert ) {
+        var $utils = WAT.getModule(moduleName);
+        var root = $('#root')[0];
+        var settings = {maxDeep:2};
+
+        $utils.doBFS(root,settings,function(element,deepness,data){
+            QUnit.ok(deepness<=settings.maxDeep,deepness+" should be <= "+settings.maxDeep);
+            assert.equal(deepness,$(element).attr('deep')," Should match the deep of the element");
+
+            if(element != root[0]){
+                assert.equal(data.parentName,$(element).parent().attr('name')," Should receive data from the parent");
+            }else{
+                assert.equal(Object.keys(data).length,0," Should not receive any data");
+            }
+            return {parentName: $(element).attr('name')}
+        });
+    });
+
+
+    QUnit.test( "Test asynchronous BFS traversal without maxDeep", function( assert ) {
+        var $utils = WAT.getModule(moduleName);
+        var root = $('#root')[0];
+        var done = assert.async();
+        $utils.doAsyncBFS(root,{},function(element,deepness,data){
+
+            assert.equal(deepness,$(element).attr('deep')," Should match the deep of the element");
+
+            if(element != root[0]){
+                assert.equal(data.parentName,$(element).parent().attr('name')," Should receive data from the parent");
+            }else{
+                assert.equal(Object.keys(data).length,0," Should not receive any data");
+            }
+            return {parentName: $(element).attr('name')}
+        }).done(function(){
+            done();
+        });
+    });
+
+    QUnit.test( "Test asynchronous BFS traversal with maxDeep", function( assert ) {
+        var $utils = WAT.getModule(moduleName);
+        var root = $('#root')[0];
+        var settings = {maxDeep:2};
+
+        var done = assert.async();
+        $utils.doAsyncBFS(root,settings,function(element,deepness,data){
+            QUnit.ok(deepness<=settings.maxDeep,deepness+" should be <= "+settings.maxDeep);
+            assert.equal(deepness,$(element).attr('deep')," Should match the deep of the element");
+
+            if(element != root[0]){
+                assert.equal(data.parentName,$(element).parent().attr('name')," Should receive data from the parent");
+            }else{
+                assert.equal(Object.keys(data).length,0," Should not receive any data");
+            }
+            return {parentName: $(element).attr('name')}
+        }).done(function(){
+            done();
+        });
+    });
+
+    QUnit.test( "Test Postorder traversal without maxDeep", function( assert ) {
+        var $utils = WAT.getModule(moduleName);
+        var root = $('#root')[0];
+
+        var totalSum = 0;
+        $(root).find("*").add(root).each(function(){
+            totalSum+= parseInt($(this).attr('height'));
+        });
+
+        var total = $utils.doPostorder(root,{},function(element,deepness,data){
+            assert.equal(deepness,$(element).attr('deep')," Should match the deep of the element");
+            assert.equal(data.length,$(element).children().length," Should match the size of data");
+
+            var total = data.reduce(function(sum,obj){
+                return sum + obj.sum;
+            }, parseInt($(element).attr('height')));
+
+            var str = "";
+            if(data.length>0) {
+                str = data.reduce(function (word, obj) {
+                    return obj.word + word;
+                },"");
+                str = '('+str+')'
+            }
+            str+=$(element).attr('name');
+
+            return {sum:total,word:str};
+        });
+
+        assert.equal(total.sum,totalSum," Should match the total sum");
+        assert.equal(total.word,"((E(H)F)B((((K)J)I)G)CD)A"," Should match the word");
+
+    });
+
+    QUnit.test( "Test Postorder traversal with maxDeep", function( assert ) {
+        var $utils = WAT.getModule(moduleName);
+        var root = $('#root')[0];
+        var settings = {maxDeep:2};
+        var totalSum = 0;
+
+        $(root).find("*").add(root).each(function(){
+            var deep = parseInt($(this).attr('deep'));
+            if(deep <= settings.maxDeep) totalSum+= parseInt($(this).attr('height'));
+        });
+
+        var total = $utils.doPostorder(root,settings,function(element,deepness,data){
+            QUnit.ok(deepness<=settings.maxDeep," Should have a deepnees less or equal the limit");
+            assert.equal(deepness,$(element).attr('deep')," Should match the deep of the element");
+
+            if(deepness < settings.maxDeep) {
+                assert.equal(data.length, $(element).children().length, " Should match the size of data");
+            }else{
+                assert.equal(data.length, 0, " Should match the size of data");
+            }
+
+            var total = data.reduce(function(sum,obj){
+                return sum + obj.sum;
+            }, parseInt($(element).attr('height')));
+
+            var str = "";
+            if(data.length>0) {
+                str = data.reduce(function (word, obj) {
+                    return obj.word + word;
+                },"");
+                str = '('+str+')'
+            }
+            str+=$(element).attr('name');
+
+            return {sum:total,word:str};
+        });
+
+        assert.equal(total.sum,totalSum," Should match the total sum");
+        assert.equal(total.word,"((EF)B(G)CD)A"," Should match the word");
+
+    });
+
+</script>
+</body>
+</html>

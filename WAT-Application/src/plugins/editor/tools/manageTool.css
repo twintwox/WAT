@@ -1,0 +1,22 @@
+/** START -- CSS code associated to the Editor's manageTool  **/
+
+li.wat-dialog-listitem{
+    display: flex;
+}
+span.wat-pattern-name{
+    flex-grow: 1;
+    display: flex;
+}
+span.wat-pattern-actions i.wat-action:hover{
+    color: #000000;
+}
+.wat-color-box{
+    margin: 3px;
+    width: 10px;
+    height: 10px;
+}
+.wat-pattern-list-box{
+    border:1px solid #aaa;
+}
+
+/** END   -- CSS code associated to the Editor's manageTool  **/

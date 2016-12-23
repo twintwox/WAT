@@ -1,0 +1,47 @@
+<div class="box box-primary">
+  <div class="box-header with-border">
+    <h3 class="box-title">
+      <div class="form-inline">
+        {{lang.getString('pending_requests')}}
+        <select  ng-model="requestLang" ng-options='lang.getString(l) for l in languages'
+          ng-change='readRequests(requestLang)' class="form-control">
+        </select>
+      </div>
+    </h3>
+
+    <div class="box-tools pull-right">
+      <button type="button" class="btn btn-box-tool" ng-click="toggleRequests()"><i class="fa fa-times"></i></button>
+    </div>
+  </div>
+  <!-- /.box-header -->
+  <div class="box-body">
+    <ul class="products-list product-list-in-box">
+      <!-- Item -->
+      <li ng-if="requests.length == 0">
+        {{lang.getString('no_pending_request')}}
+      </li>
+      <li ng-repeat="request in requests" class="item">
+        <div class="">
+          <div class="product-title">
+            <a href="{{request.domain.url}}">
+              {{request.description}}
+            </a>
+            <div class="box-tools pull-right pull-top">
+              <button type="button" ng-click="resolveRequest(request)" class="btn btn-box-tool"><i class="fa fa-hand-paper-o"></i> {{lang.getString('resolve_request')}}</button>
+            </div>
+          </div>
+          <div>
+            <span class="product-description">{{request.initiator.email}}</span>
+            <span class="label label-warning">{{request.date | date:'MM/dd/yyyy' }}</span>
+          </div>
+        </div>
+      </li>
+      <!-- /. Item -->
+    </ul>
+  </div>
+  <!-- /.box-body -->
+  <div class="box-footer text-center">
+    <a href="javascript::;" class="uppercase"></a>
+  </div>
+  <!-- /.box-footer -->
+</div>

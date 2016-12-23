@@ -1,0 +1,63 @@
+/** START -- CSS code associated to the Editor's toolbar  **/
+
+ul.wat_toolbar_element {
+	margin: 0px;
+	padding: 0px;
+	list-style-image: none !important;
+	list-style-type: none !important;
+	font-size: 20px !important;
+	font-weight: normal !important;
+	font-family: sans-serif !important;
+	line-height: 26px !important;
+	color: #747a7e !important;
+	text-shadow: none !important;
+	display: block !important;
+	position: fixed !important;
+	z-index: 2147483644 !important;
+	top: 15% !important;
+	right: 0px !important;
+	width: 48px !important;
+}
+li.wat_toolbar_element.toolbar-item {
+	box-sizing: content-box !important;
+	height: 26px !important;
+	width: 48px !important;
+	float: right;
+	padding: 15px 0px 0px 0px !important;
+	background-color: rgba(17,17,17,.5);
+	color: #f7f7f7;
+	text-align: center !important;
+	cursor: pointer !important;
+	margin-bottom: 2px !important;
+	font-size: 18px !important;
+	font-weight: bold !important;
+	transition: width 0.15s ease-in-out 0s !important;
+	-moz-transition: width 0.15s ease-in-out 0s !important;
+	-webkit-transition: width 0.15s ease-in-out 0s !important;
+}
+li.wat_toolbar_element.toolbar-item:hover{
+	width: 4em !important;
+}
+li.wat_toolbar_element.toolbar-item.active{
+	width: 4em !important;
+	background-color: rgba(17,17,17,.5)!important;
+}
+/********************************/
+
+
+.wat-posibleTargetElement {
+/*-webkit-transition: all 0.7s ease;
+transition: all 0.7s ease;*/
+}
+
+li.wat_toolbar_element.selectedTarget {
+-webkit-box-shadow: inset 0px 0px 15px 5px rgba(100, 224, 33, .75);
+box-shadow: inset 0px 0px 15px 5px rgba(100, 224, 33, .75);
+
+-webkit-transform:scale(0.8);
+transform:scale(0.8);
+-webkit-transition: all 0.7s ease;
+transition: all 0.7s ease;
+}
+
+/** END   -- CSS code associated to the Editor's toolbar  **/

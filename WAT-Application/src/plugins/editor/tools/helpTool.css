@@ -1,0 +1,38 @@
+/** START -- CSS code associated to the Editor's helpTool  **/
+
+ul.wat-helpTool-list {
+    display: flex;
+    flex-direction: column;
+}
+li.wat-helpTool-item{
+    display: flex;
+    flex-direction: row;
+    margin: 8px 0;
+}
+li.wat-helpTool-item .icon{
+    display: flex;
+    margin-top: 2px;
+    box-sizing: content-box;
+    flex-shrink: 0;
+    height: 28px;
+    width: 28px;
+    padding: 15px 0 0 15px;
+    background-color: rgba(17,17,17,.5);
+    color: #f7f7f7;
+    text-align: center;
+}
+
+li.wat-helpTool-item .wat-helpTool-description{
+    display: flex;
+    flex-direction: column;
+    padding-left: 5px;
+}
+li.wat-helpTool-item .wat-helpTool-description .wat-helpTool-block{
+    display: flex;
+    margin: 0px;
+}
+label.wat-helpTool-block{
+    font-weight: bold;
+}
+
+/** END   -- CSS code associated to the Editor's helpTool  **/

@@ -1,0 +1,35 @@
+<div class="box box-primary">
+  <div class="box-header with-border">
+    <h3 class="box-title">{{lang.getString('my_pending_requests')}}</h3>
+
+  </div>
+  <!-- /.box-header -->
+  <div class="box-body">
+    <ul class="products-list product-list-in-box">
+      <!-- Item -->
+      <li ng-repeat="request in myRequests" class="item">
+        <div class="">
+          <div class="product-title">
+            <a href="{{request.domain.url}}">
+            {{request.description}}
+            </a>
+            <div class="box-tools pull-right pull-top">
+              <button ng-click="finishRequest(request)" class="btn btn-default btn-xs">{{lang.getString('mark_as_solved')}}</button>
+            </div>
+          </div>
+          <div>
+            <span class="product-description">{{request.date | date:'MM/dd/yyyy' }}</span>
+            <!--span class="label label-warning">{{request.date | date:'MM/dd/yyyy' }}</span-->
+            <button ng-click="seeRequestTemplates(request)" class="btn btn-primary btn-xs">{{lang.getString('related_templates')}}</button><br/>
+
+          </div>
+        </div>
+      </li>
+      <!-- /. Item -->
+    </ul>
+  </div>
+  <!-- /.box-body -->
+  <div class="box-footer text-center">
+  </div>
+  <!-- /.box-footer -->
+</div>

@@ -1,0 +1,67 @@
+/** START -- CSS for the dialogs.js elements **/
+
+.wat-ui-dialog {
+    font-size: 13px;
+    position: fixed !important;
+    z-index: 2147483646 !important;
+    //text-align: justify!important;
+}
+.wat-ui-dialog label{
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+.wat-ui-dialog-background {
+    top:0px;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.75);
+    z-index: 2147483645 !important;
+}
+.wat-dialog-box-column {
+    display: flex;
+    flex-direction: column;
+    padding: 8px 0px 8px 0px;
+}
+.wat-dialog-box-row {
+    display: flex;
+    flex-direction: row
+}
+
+.wat-dialog-box-row > *:not(:first-child) {
+    padding-left: 8px;
+}
+
+
+.wat-dialog-error {
+    color:darkred;
+}
+
+.wat-dialog-list {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow-y: scroll;
+    height:200px;
+}
+.wat-dialog-help:hover{
+    color: #0066bb;
+    cursor: help;
+}
+
+.wat-dialog-listitem{
+    padding: 5px;
+    background: #dddddd;
+    margin: 3px;
+    border: 1px solid black;
+}
+.wat-dialog-list .ui-selecting { background: #92c8fe; }
+.wat-dialog-list .ui-selected{
+    background: #459ffe;
+    color: white;
+}
+
+.wat-ui-dialog :disabled{
+   cursor: not-allowed;
+}
+/** END   -- CSS for the dialogs.js elements **/

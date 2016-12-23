@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>QUnit Example</title>
+    <link rel="stylesheet" href="https://code.jquery.com/qunit/qunit-1.23.1.css">
+</head>
+<body>
+<div id="qunit"></div>
+<div id="qunit-fixture"></div>
+
+<!-- LOAD SOURCES -->
+<script src="../lib/qunit-1.23.1.js"></script>
+<script src="../../vendors/jquery-1.11.2.min.js"></script>
+<script src="../../vendors/jquery-xpath.min.js"></script>
+
+<script src="../../src/wat.js"></script>
+<script src="../../src/modules/Logger.js"></script>
+<script src="../../src/modules/XpathBuilder.js"></script>
+
+<!-- LOAD MOCKS -->
+<script src="mocks/config.mock.js"></script>
+
+<test id="testDOM" style="display: none">
+    <div></div>
+    <div>
+        <div>
+            <span class='target1'></span>
+        </div>
+        <span class='target2'></span>
+        <span class="target3"></span>
+    </div>
+    <div>
+        <span class="target4"></span>
+    </div>
+</test>
+
+<script>
+
+    QUnit.config.reorder = false;
+    QUnit.module("Test XpathBuilder module");
+    var moduleName = "XpathBuilder";
+
+
+    QUnit.test( "Check XpathBuilder module is loaded", function( assert ) {
+        assert.equal(Object.keys(WAT.unloadedModules).length,0,"shouldn't exist unloaded modules");
+        assert.notEqual(WAT.modules[moduleName],null,"should exist a module called "+moduleName+" loaded");
+    });
+
+    var contains = function(arr,el){
+        for(var i=0;i<arr.length;i++){
+            if(arr[i]==el)
+                return true;
+        }
+        return false;
+    };
+
+    QUnit.test( "Test get xpath and recover elements using XpathBuilder", function( assert ) {
+        var XpathBuilder = WAT.getModule(moduleName);
+        var xpath = new XpathBuilder();
+
+        // Single element 1
+        var target1 = $('#testDOM .target1').first()[0];
+        var xpath1 = xpath.getPath(target1)
+        assert.equal(xpath1,"/html/body/test/div[2]/div/span","should match xpaths");
+        var t1 = xpath.getElement(xpath1);
+        assert.equal(t1,target1,"should be same element");
+
+        // Single element 2
+        var target2 = $('#testDOM  .target2').first()[0];
+        var xpath2  = xpath.getPath(target2);
+        assert.equal(xpath2,"/html/body/test/div[2]/span","should match xpaths");
+        var t2 = xpath.getElement(xpath2);
+        assert.equal(t2,target2,"should be same element");
+
+        // Multiple elements
+        var target3 = $('#testDOM  .target3').first()[0];
+        var target4 = $('#testDOM  .target4').first()[0];
+        var elements = xpath.getElements(xpath2);
+
+        assert.ok(contains(elements,target2),"should contain target2");
+        assert.ok(contains(elements,target3),"should contain target3");
+        assert.ok(contains(elements,target4),"should contain target4");
+    });
+
+    QUnit.test( "Test the wildcard path", function( assert ) {
+        var XpathBuilder = WAT.getModule(moduleName);
+        var xpath = new XpathBuilder();
+
+        // Single element 1
+        var target1 = $('#testDOM .target1').first()[0];
+        var wildcard1 = xpath.getWildcardPath(target1)
+        assert.equal(wildcard1,"/html/body/test/div/div/span","should match xpaths");
+        var elements = xpath.fromWildcardPath(wildcard1);
+
+        assert.ok(contains(elements,target1),"should contain the element");
+        assert.ok(elements.length === 1,"should contain one element");
+
+        // Multiple elements
+        var target2 = $('#testDOM  .target2').first()[0];
+        var target3 = $('#testDOM  .target3').first()[0];
+        var target4 = $('#testDOM  .target4').first()[0];
+        var wildcard2 = xpath.getWildcardPath(target2);
+        elements = xpath.fromWildcardPath(wildcard2);
+
+        assert.ok(elements.length === 3,"should contain three elements");
+        assert.ok(contains(elements,target2),"should contain target2");
+        assert.ok(contains(elements,target3),"should contain target3");
+        assert.ok(contains(elements,target4),"should contain target4");
+
+    });
+
+</script>
+</body>
+</html>

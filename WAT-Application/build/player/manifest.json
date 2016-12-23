@@ -1,0 +1,32 @@
+{
+  "manifest_version": 2,
+
+  "name": "WAT Player",
+  "description": "",
+  "version": "1.0",
+  
+  "browser_action": {
+    "default_icon": "icon.png",
+    "default_popup": "chrome/popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "css": [
+          "wat-player.min.css"
+      ],
+      "js": [
+          "wat-player.min.js"
+        ]
+    }
+  ],
+  "permissions": [
+    "activeTab",
+    "storage",
+    "unlimitedStorage",
+    "https://ajax.googleapis.com/"
+  ],
+  "web_accessible_resources": [
+    "assets/*"
+  ]
+}

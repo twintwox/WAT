@@ -1,0 +1,39 @@
+<div class="login-box">
+  <div class="login-logo">
+    Web Accessibility <b>Transcoder</b>
+  </div>
+  <!-- /.login-logo -->
+  <div class="login-box-body">
+    <p class="login-box-msg">{{lang.getString('login_msg')}}</p>
+    <div>
+      <div class="form-group has-feedback">
+        <input type="email" ng-model="user.email" class="form-control" placeholder="{{lang.getString('email')}}">
+        <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+      </div>
+      <div class="form-group has-feedback">
+        <input type="password" ng-model="user.password" class="form-control" placeholder="{{lang.getString('password')}}">
+        <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+      </div>
+      <p ng-if="loginMsg" style="color:darkred;">{{loginMsg}}</p>
+      <p ng-if="$root.logoutMsg" style="color:darkgreen;">{{$root.logoutMsg}}</p>
+      <div class="row">
+        <div class="col-xs-8">
+          <div class="checkbox icheck">
+            <label>
+              <input type="checkbox"> {{lang.getString('remember_me')}}
+            </label>
+          </div>
+        </div>
+        <!-- /.col -->
+        <div class="col-xs-4">
+          <button type="submit" ng-click="login()" class="btn btn-primary btn-block btn-flat">{{lang.getString('sign_in')}}</button>
+        </div>
+        <!-- /.col -->
+      </div>
+    </div>
+
+    <a href="#">{{lang.getString('forgot_password')}}</a><br>
+    <a href="#/register" class="text-center">{{lang.getString('go_to_register')}}</a>
+
+  </div>
+</div>

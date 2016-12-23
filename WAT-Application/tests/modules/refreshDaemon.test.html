@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>QUnit Example</title>
+    <link rel="stylesheet" href="https://code.jquery.com/qunit/qunit-1.23.1.css">
+</head>
+<body>
+<div id="qunit"></div>
+<div id="qunit-fixture"></div>
+<script src="../lib/qunit-1.23.1.js"></script>
+<script src="../../vendors/jquery-1.11.2.min.js"></script>
+<script src="../../src/wat.js"></script>
+
+<!-- Mocks -->
+<script src="./mocks/config.mock.js"></script>
+
+<!-- Real modules -->
+<script src="../../src/modules/lang.js"></script>
+<script src="../../src/modules/Logger.js"></script>
+<script src="../../src/modules/utils.js"></script>
+<script src="../../src/modules/refreshDaemon.js"></script>
+<script src="../../src/modules/XpathBuilder.js"></script>
+
+<test>
+    <div class="listenChange"></div>
+    <div class="ignore"></div>
+</test>
+<script>
+
+/** QUnit setup **/
+        QUnit.config.reorder = false;
+        QUnit.module("Test Refresh Daemon module");
+        var moduleName = "$refreshDaemon";
+
+/** QUnit tests **/
+
+    QUnit.test( "Check "+moduleName+" module is loaded", function( assert ) {
+        assert.equal(Object.keys(WAT.unloadedModules).length,0,"shouldn't exist unloaded modules");
+        assert.notEqual(WAT.modules[moduleName],null,"should exist a module called "+moduleName+" loaded");
+    });
+
+/** Setup daemon **/
+    var daemon = WAT.getModule(moduleName);
+    var $config = WAT.getModule('$config');
+    $config.refreshDaemon.minLapse = 200;
+    $config.refreshDaemon.maxLapse = 3000;
+    $config.refreshDaemon.frequency = 20;
+
+
+    var arrayContains = function(arr,el){
+        for(var i=0;i<arr.length;i++){
+            if(arr[i]==el)
+                return true;
+        }
+        return false;
+    };
+    QUnit.test( "When a listened element changes", function( assert ) {
+        daemon.reset();
+        var executed = false;
+        var listenElement = $('test .listenChange').first();
+        daemon.addTask(function(changes){
+            executed = arrayContains(changes,listenElement[0]);
+        });
+        var done = assert.async();
+        listenElement.append('<div></div>');
+        setTimeout(function(){
+            assert.ok(executed, "Daemon should execute the refresh function" );
+            done();
+        },$config.refreshDaemon.minLapse + 100); // Wait to daemon cycle to end.
+    });
+    QUnit.test( "When an excluded element changes", function( assert ) {
+        daemon.reset();
+        var executed = false;
+        var excludedElement = $('test .ignore').first();
+        daemon.addTask(function(changes){
+            executed = arrayContains(changes,excludedElement[0]);
+        });
+        daemon.ignoreClassMutation('ignore');
+        excludedElement.append('<div></div>');
+        var done = assert.async();
+        setTimeout(function() {
+            assert.notOk(executed, "Daemon should NOT execute the refresh function" );
+            done();
+            daemon.removeFromIgnoreClass('ignore');
+            excludedElement.append('<div></div>');
+            var done2 = assert.async();
+            setTimeout(function() {
+                assert.ok(executed, "Daemon should execute the refresh function" );
+                done2();
+            },$config.refreshDaemon.minLapse + 1000);// Wait to daemon cycle to end.
+
+        },$config.refreshDaemon.minLapse + 1000); // Wait to daemon cycle to end.
+    });
+
+    QUnit.test( "When daemon is stopped", function( assert ) {
+        daemon.reset();
+        var executed = false;
+        var listenElement = $('test .listenChange').first();
+        daemon.addTask(function(changes){
+            executed = arrayContains(changes,listenElement[0]);
+        });
+        daemon.stop();
+        listenElement.append('<div></div>');
+        var done = assert.async();
+        setTimeout(function() {
+            assert.notOk(executed, "Daemon should NOT execute the refresh function" );
+            done();
+            daemon.start();
+            listenElement.append('<div></div>');
+            var done2 = assert.async();
+            setTimeout(function() {
+                assert.ok(executed, "When started again, Daemon should execute the refresh function" );
+                done2();
+            },$config.refreshDaemon.minLapse + 100);// Wait to daemon cycle to end.
+        },$config.refreshDaemon.minLapse + 100); // Wait to daemon cycle to end.
+    });
+
+    QUnit.test( "Testing barrier", function( assert ) {
+        daemon.reset();
+        var executed = false;
+        var listenElement = $('test .listenChange').first();
+        daemon.addTask(function(changes){
+            executed = arrayContains(changes,listenElement[0]);
+        });
+        daemon.stopChangeListening(); // +1
+        daemon.stopChangeListening(); // +2
+        daemon.stopChangeListening(); // +3
+        daemon.startChangeListening();// +2
+        daemon.startChangeListening();// +1
+        listenElement.append('<div></div>');
+        var done = assert.async();
+        setTimeout(function() {
+            assert.notOk(executed, "Daemon should NOT execute the refresh function" );
+            done();
+            daemon.startChangeListening();// 0
+            listenElement.append('<div></div>');
+            var done2 = assert.async();
+            setTimeout(function() {
+                assert.ok(executed, "When started again, Daemon should execute the refresh function" );
+                done2();
+            },$config.refreshDaemon.minLapse + 100);// Wait to daemon cycle to end.
+        },$config.refreshDaemon.minLapse + 100); // Wait to daemon cycle to end.
+    });
+</script>
+</body>
+</html>

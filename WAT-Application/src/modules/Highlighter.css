@@ -1,0 +1,10 @@
+/** START -- CSS for the highlighter.js elements **/
+
+.highlighter-selector-element{
+    position: absolute;
+    -webkit-transform:scale(0.99);
+    transform:scale(0.99);
+    z-index: 2147483643;
+}
+
+/** END   -- CSS for the highlighter.js elements **/

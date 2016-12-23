@@ -1,0 +1,25 @@
+<div class="content-wrapper">
+    <section class="content-header">
+        <h1 ng-if="getUser().final">{{lang.getString('final_user_title')}}
+            <small>{{lang.getString('final_user_subtitle')}}</small>
+        </h1>
+        <h1 ng-if="getUser().volunteer">{{lang.getString('volunteer_user_title')}}
+          <small>{{lang.getString('volunteer_user_subtitle')}}</small>
+        </h1>
+
+    </section>
+
+    <!-- Main content -->
+    <section class="content row">
+
+      <div ng-show='template==null' ng-class="{'col-md-8':($root.showRequests && (getUser().volunteer || myRequests.length > 0)) }">
+        <my-templates ng-if="getUser().volunteer"></my-templates>
+        <all-templates ng-show="$root.showAllTemplates" ></all-templates>
+      </div>
+      <edit-template ng-show='template!=null' ng-class="{'col-md-8':$root.showRequests}" ng-if="getUser().volunteer"></edit-template>
+      <do-requests ng-if="getUser().final && myRequests.length > 0" class="col-md-4"></do-requests>
+      <all-requests ng-show="$root.showRequests" ng-if="getUser().volunteer" class="col-md-4"></all-requests>
+
+    </section>
+
+</div>

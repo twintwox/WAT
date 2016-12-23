@@ -1,0 +1,78 @@
+<div class="box">
+  <div class="box-header with-border">
+    <h3 class="box-title">{{lang.getString('all_templates')}}</h3>
+    <div ng-if="getUser().volunteer" class="box-tools pull-right">
+      <button type="button" class="btn btn-box-tool" ng-click="toggleAllTemplates()"><i class="fa fa-times"></i></button>
+    </div>
+  </div>
+  <!-- /.box-header -->
+  <div class="box-body">
+    <search-box></search-box>
+    <hr/>
+    <div class="table-responsive">
+      <table class="table no-margin">
+        <thead>
+        <tr>
+          <th>Dominio</th>
+          <th>Autor</th>
+          <th>Idioma</th>
+          <th>Puntuación</th>
+          <th>Acciones</th>
+          <th>Descripción</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-if="templates.length==0"><td>{{lang.getString('no_templates_available')}}</td></tr>
+        <tr  ng-repeat="templ in templates">
+          <td>
+            <a href="http://{{templ.domain.url}}">
+              {{templ.alias}}: {{templ.domain.url}}
+            </a>
+            <span ng-if="isInstalled(templ.id)" class="label label-success">Installed</span>
+          </td>
+          <td>{{templ.author.email}}</td>
+          <td>{{lang.getString(templ.lang)}}</td>
+          <td>
+            <span class="label"
+                  ng-class="{'label-danger':(templ.positivePoints.length-templ.negativePoints.length<0),'label-success':(templ.positivePoints.length-templ.negativePoints.length>=0)}">
+                  <span ng-if="templ.positivePoints.length-templ.negativePoints.length>=0">+</span>
+                  {{templ.positivePoints.length-templ.negativePoints.length||0}}
+            </span>
+          </td>
+          <td ng-if="getUser().volunteer">
+            <span class="link" ng-show="templ.author.id===getUser().id" ng-click="editTemplate(templ)">Editar</span>
+            <span class="link" ng-hide="templ.author.id===getUser().id" ng-click="copyTemplate(templ)">Crear copia</span>
+
+          </td>
+          <td ng-if="getUser().final" >
+
+            <div>
+              <span class="link" ng-if="!isInstalled(templ.id)" ng-click="installTemplate(templ)">Instalar</span>
+              <span class="link" ng-if="isInstalled(templ.id)"  ng-click="uninstallTemplate(templ)">Desinstalar</span>
+            </div>
+            <div>
+              <button ng-click="rate(templ,true)" class="btn btn-xs btn-success" ng-class="{'disabled':isRatedUp(templ.id)}"><i class="fa fa-thumbs-o-up"></i></button>
+              <button ng-click="rate(templ,false)" class="btn btn-xs btn-danger"  ng-class="{'disabled':isRatedDown(templ.id)}"  ><i class="fa fa-thumbs-o-down"></i></button>
+            </div>
+            <div class="sparkbar" data-color="#00a65a" data-height="20"><canvas width="34" height="20" style="display: inline-block; width: 34px; height: 20px; vertical-align: top;"></canvas></div>
+          </td>
+          <td>{{templ.description}} - {{templ.date | date:'MM/dd/yyyy' }}
+            <span ng-show="templ.copyright">// Copyright: {{templ.copyright}}</span>
+          </td>
+
+        </tr>
+        </tbody>
+      </table>
+      <div ng-if="getUser().final" class="box-footer text-center">
+        <label>{{lang.getString("request_new_template")}}</label>
+        <div class="form-inline">
+          <input  class="form-control" type="text" ng-model="request.description" placeholder="Nombre del sitio"/>
+          <input  class="form-control" type="text" ng-model="request.domain.url" placeholder="URL"/>
+          <button class="btn btn-warning btn-flat" ng-click="createRequest()">Solicitar</button>
+        </div>
+      </div>
+
+    </div>
+    <!-- /.table-responsive -->
+  </div>
+</div>

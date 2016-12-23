@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>QUnit Example</title>
+    <link rel="stylesheet" href="https://code.jquery.com/qunit/qunit-1.23.1.css">
+</head>
+<body>
+<div id="qunit"></div>
+<div id="qunit-fixture"></div>
+<script src="lib/qunit-1.23.1.js"></script>
+<script src="../vendors/jquery-1.11.2.min.js"></script>
+<script src="wat.to.js"></script>
+<script src="../src/wat.js"></script>
+<script>
+
+    var module1 = new ModuleExecution('test_module_1');
+    var module2 = new ModuleExecution('test_module_2');
+    var module3 = new ModuleExecution('test_module_3');
+    var module4 = new ModuleExecution('test_module_4');
+
+    QUnit.config.reorder = false;
+    /// WAT BASE TEST
+    QUnit.module("Test WAT base framework");
+
+    QUnit.test( "When a new module without dependencies is added", function( assert ) {
+        WAT.module(module1.getId(),[],getExecuteFn(module1));
+        assert.ok(module1.isExecuted(),"module 1 should be executed");
+        assert.equal(Object.keys(WAT.modules).length, 1,"module 1 should be inside modules");
+        assert.equal(Object.keys(WAT.unloadedModules).length, 0,"module 1 shouldn't be inside unloaded modules");
+    });
+
+    QUnit.test( "When a new module with existing dependencies is added", function( assert ) {
+        WAT.module(module2.getId(),[module1.getId()],getExecuteFn(module2));
+        assert.ok(module2.isExecuted(),"module 2 should be executed");
+        assert.equal(Object.keys(WAT.modules).length, 2,"module 2 should be inside modules");
+        assert.equal(Object.keys(WAT.unloadedModules).length, 0,"module 2 shouldn't be inside unloaded modules");
+    });
+
+    QUnit.test( "When a new module with pending dependencies is added", function( assert ) {
+        WAT.module(module3.getId(),[module4.getId()],getExecuteFn(module3));
+        assert.notOk(module3.isExecuted(),"module 3 shouldn't be executed");
+        assert.equal(Object.keys(WAT.modules).length, 2,"module 3 shouldn't be inside modules");
+        assert.equal(Object.keys(WAT.unloadedModules).length,1,"module 3 should be inside unloaded modules");
+    });
+
+    QUnit.test( "When a new module that provides a pending dependencies is added", function( assert ) {
+        WAT.module(module4.getId(),[],getExecuteFn(module4));
+        assert.ok(module4.isExecuted(),"module 4 should be executed");
+        assert.ok(module3.isExecuted(),"module 3 should be now executed");
+        assert.equal(Object.keys(WAT.modules).length, 4,"module 3 and 4 should be now inside modules");
+        assert.equal(Object.keys(WAT.unloadedModules).length,0,"unloaded modules should be empty");
+    });
+
+</script>
+</body>
+</html>

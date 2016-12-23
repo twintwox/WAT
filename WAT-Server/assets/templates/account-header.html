@@ -1,0 +1,74 @@
+<!-- Main Header -->
+<header class="main-header" ng-controller="HomeCtrl">
+    <!-- Logo -->
+    <a href="#" class="logo">
+        <!-- mini logo for sidebar mini 50x50 pixels -->
+        <span class="logo-mini"><b>WAT</b></span>
+        <!-- logo for regular state and mobile devices -->
+        <span class="logo-lg">Web <b>Transcoder</b></span>
+    </a>
+
+    <!-- Header Navbar -->
+    <nav class="navbar navbar-static-top" role="navigation">
+
+        <!-- Navbar Right Menu -->
+        <div class="navbar-custom-menu">
+            <ul class="nav navbar-nav" style="padding-right: 35px">
+                <!-- Tasks Menu -->
+                <li class="dropdown tasks-menu" ng-if="getUser().volunteer">
+                    <a ng-click="toggleRequests()" class="dropdown-toggle">
+                      <i class="fa fa-flag-o"></i>
+                      <span class="label label-danger">{{$root.requestLength || 0}}</span>
+                    </a>
+                   <!-- Menu Toggle Button ->
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        <i class="fa fa-flag-o"></i>
+                        <span class="label label-danger">{{requests.length}}</span>
+                    </a>
+                    <!--ul class="dropdown-menu">
+                        <li class="header">There are {{requests.length}} pending requests</li>
+                        <li>
+                            <!-- Inner menu: contains the tasks ->
+                            <ul class="menu">
+                                <li><!-- Task item ->
+                                    <a href="#">
+                                        <!-- Task title and progress text ->
+                                        <h3>
+                                            Design some buttons
+                                            <small class="pull-right">20%</small>
+                                        </h3>
+                                        <!-- The progress bar ->
+                                        <div class="progress xs">
+                                            <!-- Change the css width attribute to simulate progress ->
+                                            <div class="progress-bar progress-bar-aqua" style="width: 20%" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100">
+                                                <span class="sr-only">20% Complete</span>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </li><!-- end task item ->
+                            </ul>
+                        </li>
+                        <li class="footer">
+                            <a href="#">View all tasks</a>
+                        </li>
+                    </ul-->
+                </li>
+                <li class="tasks-menu" ng-if="getUser().volunteer">
+                  <a ng-click="toggleAllTemplates()">
+                    <i class="fa fa-th-list"></i>
+                  </a>
+                </li>
+               <li>
+                 <span style="color:white;position: relative;display: block;padding: 15px 15px;">
+                   <b>{{getUser().name.charAt(0).toUpperCase() + getUser().name.slice(1);}}</b>
+                 </span>
+               </li>
+                <li>
+                  <a href="#" ng-click="$root.logout()">
+                     Cerrar session
+                  </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</header>

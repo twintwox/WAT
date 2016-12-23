@@ -1,0 +1,52 @@
+<div class="box">
+  <div class="box-header with-border">
+    <h3 class="box-title">{{lang.getString('my_templates')}}</h3>
+    <button style="float: right" ng-click="selectNewTemplate()" class="btn btn-primary btn-flat">
+      {{lang.getString('create_template')}}
+    </button>
+  </div>
+  <!-- /.box-header -->
+  <div class="box-body">
+
+    <div class="table-responsive">
+      <table class="table no-margin">
+        <thead>
+        <tr>
+          <th>Dominio</th>
+          <th>Idioma</th>
+          <th>Puntuación</th>
+          <th>Acciones</th>
+          <th>Descripción</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-if="myTemplates.length==0"><td>{{lang.getString('no_templates_available')}}</td></tr>
+        <tr  ng-repeat="templ in myTemplates">
+          <td>
+            <a href="http://{{templ.domain.url}}">
+              {{templ.alias}}: {{templ.domain.url}}
+            </a>
+            <span ng-if="isInstalled(templ.id)" class="label label-success">Installed</span>
+          </td>
+          <td>{{lang.getString(templ.lang)}}</td>
+          <td>
+            <span class="label"
+              ng-class="{'label-danger':(templ.positivePoints.length-templ.negativePoints.length<0),'label-success':(templ.positivePoints.length-templ.negativePoints.length>=0)}">
+              <span ng-if="templ.positivePoints.length-templ.negativePoints.length>=0">+</span>
+              {{templ.positivePoints.length-templ.negativePoints.length||0}}
+            </span>
+          </td>
+          <td>
+            <span class="link" ng-show="templ.author.id===getUser().id" ng-click="editTemplate(templ)">Editar</span>
+          </td>
+          <td>{{templ.description}} - {{templ.date | date:'MM/dd/yyyy' }}
+            <span ng-show="templ.copyright">// Copyright: {{templ.copyright}}</span>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <!-- /.table-responsive -->
+  </div>
+</div>
+

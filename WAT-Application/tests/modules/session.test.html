@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>QUnit Example</title>
+    <link rel="stylesheet" href="https://code.jquery.com/qunit/qunit-1.23.1.css">
+</head>
+<body>
+<div id="qunit"></div>
+<div id="qunit-fixture"></div>
+<script src="../lib/qunit-1.23.1.js"></script>
+<script src="../../vendors/jquery-1.11.2.min.js"></script>
+<script src="../../src/wat.js"></script>
+
+<!-- Mocks -->
+<script src="./mocks/config.mock.js"></script>
+<script src="./mocks/localStorage.mock.js"></script>
+<script src="./mocks/persistentStorage.mock.js"></script>
+
+<!-- Real modules -->
+<script src="../../src/modules/lang.js"></script>
+<script src="../../src/modules/Logger.js"></script>
+<script src="../../src/modules/utils.js"></script>
+<script src="../../src/modules/session.js"></script>
+
+<script>
+
+    var SessionObject = function (key,value){
+        this.key = key;
+        this.value = value;
+    };
+    SessionObject.prototype.asJSON = function () {
+        return JSON.stringify({key:this.key,value:this.value});
+    };
+    SessionObject.prototype.getKey = function () {
+        return this.key;
+    };
+    SessionObject.prototype.getId = function () {
+        return this.key;
+    };
+    SessionObject.prototype.getValue = function () {
+        return this.value;
+    };
+
+    var moduleName = "$session";
+    QUnit.config.reorder = false;
+    QUnit.module("Test Session module");
+
+    QUnit.test( "Check session module is loaded", function( assert ) {
+        assert.equal(Object.keys(WAT.unloadedModules).length,0,"shouldn't exist unloaded modules");
+        assert.notEqual(WAT.modules[moduleName],null,"should exist a module called $session loaded");
+        var session = WAT.getModule(moduleName);
+        assert.ok(session.enabled," session should be enabled");
+    });
+
+    QUnit.test( "Check basic session operations", function( assert ) {
+
+        var session = WAT.getModule(moduleName);
+        //Clear session:
+        session.deleteAll();
+        //Create session object
+        var so1 = new SessionObject('so1',1);
+        assert.ok(session.enabled," session should be enabled");
+
+        assert.ok(session.save(so1.getKey(),so1),"should save a new element");
+        assert.equal(JSON.stringify(session.get(so1.getKey())),so1.asJSON(),"getting a key should return same value");
+        assert.ok(session.remove(so1.getKey()),"should delete the element");
+        assert.notOk(session.remove(so1.getKey()),"shouldn't be able to delete if element doesn't exist");
+
+        assert.ok(session.save(so1.getKey(),so1),"should be able to save again the element");
+        assert.equal(JSON.stringify(session.get(so1.getKey())),so1.asJSON(),"getting a key should return same value");
+        assert.ok(session.remove(so1.getKey()),"should delete the element");
+        assert.notOk(session.remove(so1.getKey()),"shouldn't be able to delete if element doesn't exist");
+
+        // Create session object with same key
+        var so2 = new SessionObject('so1',2);
+        // Override so1 with so2.
+        assert.ok(session.save(so1.getKey(),so1),"should be able to save again the element");
+        assert.ok(session.save(so2.getKey(),so2),"should be able to override the element");
+        assert.equal(JSON.stringify(session.get(so1.getKey())),so2.asJSON(),"getting a key should return the updated value");
+        assert.equal(JSON.stringify(session.get(so2.getKey())),so2.asJSON(),"getting a key should return the updated value");
+        assert.ok(session.remove(so2.getKey()),"should delete the element");
+
+    });
+
+    QUnit.test( "Check array session operations", function( assert ) {
+        var so1 = new SessionObject('so1',1);
+        var so2 = new SessionObject('so2',2);
+        var so3 = new SessionObject('so3',3);
+        var session = WAT.getModule(moduleName);
+        assert.ok(session.enabled," session should be enabled");
+        //Clear session:
+        session.deleteAll();
+
+        var arrayKey = "test";
+        var array = [so1,so2,so3];
+
+        assert.ok(session.saveArray(arrayKey,array),"should save a new array");
+        var restored = session.getArray(arrayKey);
+        assert.equal(restored.length,array.length,"both arrays should have the same length");
+        var eq = true;
+        for(var i = 0;i<array.length;i++){
+            if(!restored[i]){
+                eq=false;
+                break;
+            }
+            eq &= array[i].asJSON() == JSON.stringify(restored[i]);
+        }
+        assert.ok(eq,"both arrays should have the same values at the same position");
+        assert.ok(session.remove(arrayKey),"should delete the array");
+        assert.notOk(session.remove(arrayKey),"shouldn't be able to delete if array doesn't exist");
+
+    });
+
+    QUnit.test( "Check collection session operations", function( assert ) {
+        var so1 = new SessionObject('so1',1);
+        var so2 = new SessionObject('so2',2);
+        var so3 = new SessionObject('so3',3);
+        var collectionID = "collection";
+        var collectionFactory = function(item){
+            return new SessionObject(item.key,item.value);
+        };
+        var session = WAT.getModule(moduleName);
+        assert.ok(session.enabled," session should be enabled");
+        //Clear session:
+        session.deleteAll();
+
+
+        var collection = session.getCollection(collectionID,collectionFactory);
+        assert.equal(Object.keys(collection).length,0,"collection should be empty");
+
+        collection[so1.getId()] = so1;
+        collection[so2.getId()] = so2;
+        session.saveCollection(collectionID,collection);
+
+        // Get collection from cache
+        collection = session.getCollection(collectionID,collectionFactory);
+        assert.equal(Object.keys(collection).length,2,"collection from cache should contain 2 elements");
+
+        // Get collection from storage
+        collection = session.getCollection(collectionID,collectionFactory,null,true);
+        assert.equal(Object.keys(collection).length,2,"collection from from storage should contain 2 elements");
+
+        // Add element to collection
+        collection[so3.getId()] = so3;
+        session.saveCollection(collectionID,collection);
+        collection = session.getCollection(collectionID,collectionFactory,null,true);
+        assert.equal(Object.keys(collection).length,3,"collection from from storage should contain 3 elements");
+
+        // Remove element from collection
+        delete collection[so3.getId()];
+        session.saveCollection(collectionID,collection);
+        collection = session.getCollection(collectionID,collectionFactory,null,true);
+        assert.equal(Object.keys(collection).length,2,"after delete collection should have 2 elements");
+
+        // Collection should have so1 and so2
+        assert.ok(collection[so1.getId()].getValue(),so1.getValue(),"collection should contain object 1");
+        assert.ok(collection[so2.getId()].getValue(),so2.getValue(),"collection should contain object 2");
+
+
+    });
+
+
+
+</script>
+</body>
+</html>

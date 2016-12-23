@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html><head>
+    <link rel="stylesheet" href="popup.css">
+    <script src="../assets/jquery-1.11.2.min.js"></script>
+</head>
+<body style="overflow:hidden;">
+<div id="wrapper">
+    <div id="menu-items">
+        <div id="titletext">
+            W.A.T. <img src="../icon.png" class="logo">
+        </div>
+
+
+        <!-- ************ Status entries *********** -->
+        <div id="status"></div>
+
+        <!-- ************ Standard menu entries *********** -->
+        <div id="entries"></div>
+        <div id="templates" style="display: none;">
+            <div class="menu-entry" style="display: block;"></div>
+            <div class="menu-toggle" style="display: block;">
+                <input type="checkbox" class="check">
+            </div>
+            <div class="separator" style="display: block;"></div>
+            <div class="box" style="display: block;">
+                <a style="float:right;" href=""></a>
+                <div class="header"></div>
+                <div style="padding:2px 0px 0px 2px;">
+                    <div><span class="block_count_number"></span></div>
+                </div>
+            </div>
+        </div>
+    </div> <!-- menu-items-->
+
+    <div id="div_slideout" style="cursor: pointer;">
+        <div style="margin: 5px 0px;">
+            <a id="link_open" target="_blank" href="https://github.com/twintwox/WAT">Github</a>
+        </div>
+    </div>
+</div> <!-- wrapper -->
+
+<script src="popup.js"></script>
+</body></html>
+

@@ -11,7 +11,7 @@ WAT.module('$transcodingFormLang',['$lang'],function($lang){
         transcode_form_title:  'Etiquetar componente',
         immutable_element_msg: 'Este atributo solo puede editarse una sola vez',
 
-        tr_pattern_flexibility: 'Flexibilidad de similitud',
+        tr_pattern_flexibility: 'Indice de similitud (muy flexible -- poco flexible)',
         tr_pattern_flexibility_desc: 'Indice de flexiblidad: Define que tan flexible debe ser el patrón para identificar otros objetos como similares.',
 
         tr_pattern_name:		'Alias del objeto semántico',
